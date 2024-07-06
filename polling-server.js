@@ -53,6 +53,19 @@ app.get('/messages/:recip', (req, res) => {
 
 app.post('/messages', (req, res) => {
 
+	const { recipient, content, sender } = req.body;
+
+	// Validate required fields
+	if (!content || !recipient || !sender) {
+		return res.status(400).send('Each message must have content, sender, and recipient');
+	}
+
+	const newMessage = new Message(nextTimestamp, recipient, content, sender);
+	nextTimestamp += 1
+	appendMsg(newMessage); 
+    res.status(201).json({});
+
+    /*
     const newMessages = req.body;
 
     // Validate that newMessages is an array
@@ -61,7 +74,6 @@ app.post('/messages', (req, res) => {
     }
 
     // Validate and add each message
-    const addedMessages = [];
     for (const msg of newMessages) {
         const { recipient, content, sender } = msg;
 
@@ -73,23 +85,23 @@ app.post('/messages', (req, res) => {
         const newMessage = new Message(nextTimestamp, recipient, content, sender);
         nextTimestamp += 1
         appendMsg(newMessage); 
-        addedMessages.push(newMessage);
     }
 
     res.status(201).json({});
+    */
 });
 
-// const PRIVKEY = '/etc/'
+const PRIVKEY = '/etc/letsencrypt/live/daily-planners.com/privkey.pem'
+const PUBLICKEY = '/etc/letsencrypt/live/daily-planners.com/fullchain.pem'
 
 // Read SSL certificate and key
 
-/*
 const options = {
-  key: fs.readFileSync('/etc/privkey.pem'),
-  cert: fs.readFileSync('/etc/fullchain.pem')
+  key: fs.readFileSync(PRIVKEY),
+  cert: fs.readFileSync(PUBLICKEY)
 };
-*/
 
-app.listen(port, () => {
+
+https.createServer(options, app).listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
