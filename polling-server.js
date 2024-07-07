@@ -4,6 +4,7 @@ const https = require('https');
 const bodyParser = require('body-parser')
 const app = express();
 const port = 9999;
+const cors = require('cors')
 
 class Message {
   constructor(timestamp, recipient, content, sender) {
@@ -16,6 +17,8 @@ class Message {
 
 // Middleware to parse JSON request bodies
 app.use(bodyParser.json());
+
+app.use(cors()); 
 
 const messages = {}
 
